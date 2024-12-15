@@ -14,6 +14,7 @@ docker_client = docker.from_env()
 MY_AUTH_TOKEN = os.getenv('CI_TOKEN', None)  # Берем наш токен из переменной окружения
 MY_AUTH_TOKEN = "Aboba"
 
+
 def init_logging():
     """
     Инициализация логгера
@@ -42,6 +43,7 @@ def init_logging():
     }
     logging.config.dictConfig(log_config)
 
+
 def get_active_containers():
     """
     Получение списка запущенных контейнеров
@@ -54,11 +56,12 @@ def get_active_containers():
             'short_id': container.short_id,
             'container_name': container.name,
             'image_name': container.image.tags,
-            'created':  container.attrs['Created'],
-            'status':  container.status,
-            'ports':  container.ports,
+            'created': container.attrs['Created'],
+            'status': container.status,
+            'ports': container.ports,
         })
     return result
+
 
 def get_container_name(item: dict) -> [str, str]:
     """
@@ -76,6 +79,7 @@ def get_container_name(item: dict) -> [str, str]:
     if repository and tag:
         return f'{repository}:{tag}', repository
     return '', ''
+
 
 def kill_old_container(container_name: str) -> bool:
     """
@@ -98,6 +102,7 @@ def kill_old_container(container_name: str) -> bool:
     log.info(f'Container deleted. container_name = {container_name}')
     return True
 
+
 def deploy_new_container(image_name: str, container_name: str, ports: dict = None):
     try:
         # Пул последнего image из docker hub'a
@@ -113,6 +118,7 @@ def deploy_new_container(image_name: str, container_name: str, ports: dict = Non
         return {'status': False, 'error': str(e)}, 400
     log.info(f'Container deployed. container_name = {container_name}')
     return {'status': True}, 200
+
 
 @app.route('/', methods=['GET', 'POST'])
 def MainHandler():
@@ -139,12 +145,19 @@ def MainHandler():
         result, status = deploy_new_container(image_name, container_name, ports)
         return jsonify(result), status
 
+
+@app.route('/hello', methods=['GET'])
+def hello():
+    return "Hi!"
+
+
 def main():
     init_logging()
     if not MY_AUTH_TOKEN:
         log.error('There is no auth token in env')
         sys.exit(1)
     app.run(host='0.0.0.0', port=5000)
+
 
 if __name__ == '__main__':
     main()
