@@ -134,7 +134,9 @@ def MainHandler():
     }
     :return:
     """
-    if request.headers.get('Authorization') != MY_AUTH_TOKEN:
+    token = request.headers.get('Authorization')
+    if token != MY_AUTH_TOKEN:
+        log.debug(f'Recieved token {token}, my token {MY_AUTH_TOKEN}')
         return jsonify({'message': 'Bad token'}), 401
     if request.method == 'GET':
         return jsonify(get_active_containers())
