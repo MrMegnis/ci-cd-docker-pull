@@ -134,6 +134,9 @@ def MainHandler():
     }
     :return:
     """
+    log.info(f"Request method: {request.method}")
+    log.info(f"Request headers: {request.headers}")
+    log.info(f"Request body: {request.data}")
     token = request.headers.get('Authorization')
     log.info(f'Recieved token {token}, my token {MY_AUTH_TOKEN}')
     if token != MY_AUTH_TOKEN:
